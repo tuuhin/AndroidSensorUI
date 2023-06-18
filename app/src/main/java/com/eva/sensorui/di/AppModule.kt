@@ -1,9 +1,11 @@
 package com.eva.sensorui.di
 
 import com.eva.sensorui.MainViewModel
+import com.eva.sensorui.presentation.navigation.home.HomeViewModel
 import com.eva.sensorui.sensors.AccelerometerSensor
 import com.eva.sensorui.sensors.AndroidBaseSensor
 import com.eva.sensorui.sensors.CompassSensor
+import com.eva.sensorui.sensors.DeviceAvailableSensors
 import com.eva.sensorui.sensors.GyroscopeSensor
 import com.eva.sensorui.sensors.LightSensor
 import com.eva.sensorui.sensors.ProximitySensor
@@ -23,6 +25,10 @@ val appModule = module {
     single<AndroidBaseSensor>(named(SensorTypes.COMPASS)) { CompassSensor(get()) }
 
     single<AndroidBaseSensor>(named(SensorTypes.GYROSCOPE)) { GyroscopeSensor(get()) }
+
+    single { DeviceAvailableSensors(get()) }
+
+    viewModel { HomeViewModel(get()) }
 
     viewModel { MainViewModel(get(named(SensorTypes.GYROSCOPE))) }
 }
