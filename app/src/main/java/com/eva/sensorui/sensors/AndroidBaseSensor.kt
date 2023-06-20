@@ -5,7 +5,6 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.util.Log
 import androidx.core.content.getSystemService
 
 abstract class AndroidBaseSensor(
@@ -14,7 +13,7 @@ abstract class AndroidBaseSensor(
     sensorType: Int
 ) : MeasurableSensor(sensorType), SensorEventListener {
 
-    private val tag = "ANDROID_BASE_SENSOR"
+  //  private val tag = "ANDROID_BASE_SENSOR"
 
     private val sensorManager by lazy { context.getSystemService<SensorManager>() }
 
@@ -42,14 +41,13 @@ abstract class AndroidBaseSensor(
     override fun stopListening() {
         if (!sensorAvailable) return
         sensorManager?.unregisterListener(this)
-
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
         if (!sensorAvailable) return
         if (event?.sensor?.type == sensorType) {
-            Log.d(tag, event.values.toList().toString())
-            onSensorValueChanged?.let { it(event.values.toList()) }
+            // Log.d(tag, event.values.toList().toString())
+            onSensorValueChanged?.invoke(event.values.toList())
         }
     }
 

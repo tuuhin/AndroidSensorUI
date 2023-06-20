@@ -3,6 +3,7 @@ package com.eva.sensorui.presentation.composables
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -20,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.eva.sensorui.R
@@ -28,6 +31,8 @@ import com.eva.sensorui.R
 fun SensorCard(
     @DrawableRes image: Int,
     title: String,
+    range: Float,
+    vendor: String,
     onTap: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -43,8 +48,7 @@ fun SensorCard(
         ) {
             Card(
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    contentColor = MaterialTheme.colorScheme.primaryContainer
+                    containerColor = MaterialTheme.colorScheme.primaryContainer
                 ),
             ) {
                 Image(
@@ -58,13 +62,32 @@ fun SensorCard(
                 )
             }
             Spacer(modifier = Modifier.width(4.dp))
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyMedium,
+            Column(
                 modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = 2.dp)
-            )
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Divider(modifier = Modifier.padding(vertical = 2.dp))
+                Text(
+                    text = buildAnnotatedString {
+                        append("Range: ")
+                        append("$range")
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Text(
+                    text = buildAnnotatedString {
+                        append("Vendor: ")
+                        append(vendor)
+                    }, style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            }
         }
     }
 }
@@ -75,6 +98,8 @@ fun SensorCardPreview() {
     SensorCard(
         image = R.drawable.ic_sensor_brightness,
         title = "Brightness",
-        onTap = { }
+        onTap = { },
+        vendor = "",
+        range = 0f
     )
 }

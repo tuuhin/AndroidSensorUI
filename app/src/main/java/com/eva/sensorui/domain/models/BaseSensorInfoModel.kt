@@ -8,4 +8,5 @@ data class BaseSensorInfoModel(
     val vendor: String,
     val range: Float,
     val power: Float,
+    val version: Int,
 )

@@ -1,6 +1,7 @@
 package com.eva.sensorui.presentation.navigation.home
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,7 +22,7 @@ import androidx.navigation.NavController
 import com.eva.sensorui.domain.models.BaseSensorInfoModel
 import com.eva.sensorui.presentation.composables.SensorCard
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeRoute(
@@ -45,8 +46,12 @@ fun HomeRoute(
                     SensorCard(
                         image = sensor.imageRes,
                         title = sensor.name,
-                        onTap = { /*TODO*/ },
-                        modifier = Modifier.fillMaxWidth()
+                        range = sensor.range,
+                        vendor = sensor.vendor,
+                        onTap = { navController.navigate("/detailed/" + sensor.sensorType) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .animateItemPlacement()
                     )
                 }
             }
