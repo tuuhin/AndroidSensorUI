@@ -38,9 +38,9 @@ fun SensorCard(
 ) {
     OutlinedCard(
         modifier = modifier
-            .clickable(onClick = onTap, role = Role.Button)
-            .clip(MaterialTheme.shapes.medium),
-        shape = MaterialTheme.shapes.medium
+            .clip(MaterialTheme.shapes.small)
+            .clickable(onClick = onTap, role = Role.Button),
+        shape = MaterialTheme.shapes.small
     ) {
         Row(
             modifier = Modifier.padding(10.dp),

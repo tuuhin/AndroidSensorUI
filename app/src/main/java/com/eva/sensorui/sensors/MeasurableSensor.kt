@@ -3,7 +3,7 @@ package com.eva.sensorui.sensors
 abstract class MeasurableSensor(
     protected val sensorType: Int
 ) {
-    protected var onSensorValueChanged: ((List<Float>) -> Unit)? = null
+    protected var onSensorValueChanged: (suspend (List<Float>) -> Unit)? = null
 
     abstract val sensorAvailable: Boolean
 
@@ -11,7 +11,7 @@ abstract class MeasurableSensor(
 
     abstract fun stopListening()
 
-    fun onSensorEvents(listener: ((List<Float>) -> Unit)?) {
+    fun onSensorEvents(listener: (suspend (List<Float>) -> Unit)?) {
         onSensorValueChanged = listener
     }
 }

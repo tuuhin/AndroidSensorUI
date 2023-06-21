@@ -39,7 +39,7 @@ class DetailedRouteViewModel(
 
     private lateinit var _sensor: AndroidBaseSensor
 
-    private val _queue = FixedLengthQueue<AxisInformation>(100)
+    private val _queue = FixedLengthQueue<AxisInformation>(20)
 
     private val _sensorInfo = MutableStateFlow<BaseSensorInfoModel?>(null)
     val sensorFlow = _sensorInfo.asStateFlow()
@@ -86,6 +86,8 @@ class DetailedRouteViewModel(
                         else -> AxisInformation.UnknownInformation
                     }
                     _currentSensorValue.update { info }
+                   // delay(5.seconds)
+                    _queue.add(info)
                 }
             }
         }

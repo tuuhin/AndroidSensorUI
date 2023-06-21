@@ -48,11 +48,13 @@ fun NavigationGraph(modifier: Modifier = Modifier) {
             val viewModel = koinViewModel<DetailedRouteViewModel>()
             val sensorInfo by viewModel.sensorFlow.collectAsStateWithLifecycle()
             val currentValue by viewModel.currentSensorValue.collectAsStateWithLifecycle()
+            val sensorValues by viewModel.sensorValues.collectAsStateWithLifecycle()
 
             DetailsRoute(
                 navController = navController,
                 axis = currentValue,
-                sensorInfo = sensorInfo
+                sensorInfo = sensorInfo,
+                sensorValues = sensorValues,
             )
         }
 

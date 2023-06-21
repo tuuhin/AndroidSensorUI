@@ -19,8 +19,9 @@ fun SensorExtraData(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .padding(horizontal = 10.dp)
             .padding(vertical = 1.dp),
-        horizontalArrangement = Arrangement.SpaceAround
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
             text = "$title :",
