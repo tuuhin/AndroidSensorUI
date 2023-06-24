@@ -1,4 +1,4 @@
-package com.eva.sensorui.mapper
+package com.eva.sensorui.data.mapper
 
 import android.hardware.Sensor
 import com.eva.sensorui.R

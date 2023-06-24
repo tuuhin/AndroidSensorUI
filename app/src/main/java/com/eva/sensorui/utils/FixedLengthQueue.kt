@@ -25,6 +25,11 @@ class FixedLengthQueue<T>(private val capacity: Int) {
 
     val size: Int
         get() = queue.size
+    fun prefill(item: T) {
+        for (k in 0..capacity) {
+            queue.addLast(item)
+        }
+    }
 
     fun add(item: T) {
         if (queue.size >= capacity)

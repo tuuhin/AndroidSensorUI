@@ -1,11 +1,11 @@
-package com.eva.sensorui.sensors
+package com.eva.sensorui.data.sensors
 
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorManager
 import androidx.core.content.getSystemService
 import com.eva.sensorui.R
-import com.eva.sensorui.mapper.toBaseSensor
+import com.eva.sensorui.data.mapper.toBaseSensor
 import com.eva.sensorui.domain.models.BaseSensorInfoModel
 
 class DeviceAvailableSensors(context: Context) {

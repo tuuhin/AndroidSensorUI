@@ -1,4 +1,4 @@
-package com.eva.sensorui.sensors
+package com.eva.sensorui.data.sensors
 
 abstract class MeasurableSensor(
     protected val sensorType: Int
