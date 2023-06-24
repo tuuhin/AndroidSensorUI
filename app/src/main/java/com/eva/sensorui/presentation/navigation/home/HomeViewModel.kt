@@ -3,7 +3,7 @@ package com.eva.sensorui.presentation.navigation.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.eva.sensorui.domain.models.BaseSensorInfoModel
-import com.eva.sensorui.sensors.DeviceAvailableSensors
+import com.eva.sensorui.data.sensors.DeviceAvailableSensors
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
