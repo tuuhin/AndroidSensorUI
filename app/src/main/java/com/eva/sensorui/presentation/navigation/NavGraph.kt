@@ -1,7 +1,11 @@
 package com.eva.sensorui.presentation.navigation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
@@ -46,16 +50,25 @@ fun NavigationGraph(modifier: Modifier = Modifier) {
         ) {
 
             val viewModel = koinViewModel<DetailedRouteViewModel>()
-            val sensorInfo by viewModel.sensorFlow.collectAsStateWithLifecycle()
+            val sensorInfo by viewModel.sensorInformation.collectAsStateWithLifecycle()
             val currentValue by viewModel.currentSensorValue.collectAsStateWithLifecycle()
-            val sensorValues by viewModel.sensorValues.collectAsStateWithLifecycle()
+            val sensorGraphData by viewModel.sensorGraphData.collectAsStateWithLifecycle()
 
-            DetailsRoute(
-                navController = navController,
-                axis = currentValue,
-                sensorInfo = sensorInfo,
-                sensorValues = sensorValues,
-            )
+            if (sensorInfo == null) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                DetailsRoute(
+                    navController = navController,
+                    axis = currentValue,
+                    sensorInfo = sensorInfo!!,
+                    sensorGraphData = sensorGraphData
+                )
+            }
         }
 
     }

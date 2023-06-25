@@ -8,8 +8,9 @@ import com.eva.sensorui.domain.models.BaseSensorInfoModel
 import com.eva.sensorui.domain.respository.SensorDataRepository
 import com.eva.sensorui.presentation.navigation.NavArgs
 import com.eva.sensorui.data.sensors.DeviceAvailableSensors
+import com.eva.sensorui.domain.models.GraphData
 import com.eva.sensorui.utils.AxisInformation
-import com.eva.sensorui.utils.FixedLengthQueue
+import com.eva.sensorui.utils.GraphAxisUpdater
 import com.eva.sensorui.utils.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,46 +23,42 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class DetailedRouteViewModel(
-    repository: SensorDataRepository,
+    private val repository: SensorDataRepository,
     savedStateHandle: SavedStateHandle,
-    sensors: DeviceAvailableSensors
+    private val sensors: DeviceAvailableSensors
 ) : ViewModel() {
 
-    private val sensorType = savedStateHandle.get<Int>(NavArgs.SENSOR_ID) ?: -1
-
-    private val _queue = FixedLengthQueue<AxisInformation>(20)
-        .apply {
-            prefill(AxisInformation.LoadingInformation)
-        }
+    private val _queue = GraphAxisUpdater(20)
 
     private val _sensorInfo = MutableStateFlow<BaseSensorInfoModel?>(null)
-    val sensorFlow = _sensorInfo.asStateFlow()
+    val sensorInformation = _sensorInfo.asStateFlow()
 
     private val _currentSensorValue =
         MutableStateFlow<AxisInformation>(AxisInformation.LoadingInformation)
     val currentSensorValue = _currentSensorValue.asStateFlow()
 
-    val sensorValues = _queue.asFlow().stateIn(
-        viewModelScope, SharingStarted.Lazily,
-        emptyList()
+    val sensorGraphData = _queue.graphData.stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(400L),
+        GraphData()
     )
 
     init {
+        val sensorType = savedStateHandle.get<Int>(NavArgs.SENSOR_ID) ?: -1
         if (sensorType != -1) {
             _sensorInfo.update { sensors.getSensorInfoFromType(sensorType) }
 
             viewModelScope.launch(Dispatchers.IO) {
                 when (val data = repository.getSensorData(sensor = sensorType)) {
                     is Resource.Error -> {
-                        Log.d("ERROR", "Error Occured")
+                        Log.d("ERROR", "Error Occurred")
                     }
 
                     is Resource.Success -> {
-                        data.data?.onEach { info ->
-                            _currentSensorValue.update { info }
-                            _queue.add(info)
-                        }
-                            ?.launchIn(viewModelScope)
+                        data.data
+                            ?.onEach { info ->
+                                _currentSensorValue.update { info }
+                                _queue.add(info)
+                            }?.launchIn(viewModelScope)
                     }
                 }
             }

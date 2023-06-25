@@ -4,12 +4,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.LinkedList
 
-class FixedLengthQueue<T>(private val capacity: Int) {
+open class FixedLengthQueue<T>(
+    private val capacity: Int
+) {
 
     private val queue = LinkedList<T>()
     private val queueFlow = MutableStateFlow(queue.toList())
 
-    val values: List<T?>
+    val values: List<T>
         get() = queue
 
     val first: T?
@@ -25,13 +27,14 @@ class FixedLengthQueue<T>(private val capacity: Int) {
 
     val size: Int
         get() = queue.size
+
     fun prefill(item: T) {
         for (k in 0..capacity) {
             queue.addLast(item)
         }
     }
 
-    fun add(item: T) {
+    open fun add(item: T) {
         if (queue.size >= capacity)
             queue.removeFirst()
         queue.addLast(item)
