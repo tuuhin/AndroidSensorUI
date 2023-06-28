@@ -9,12 +9,15 @@ import com.eva.sensorui.domain.respository.SensorDataRepository
 import com.eva.sensorui.presentation.navigation.NavArgs
 import com.eva.sensorui.data.sensors.DeviceAvailableSensors
 import com.eva.sensorui.domain.models.GraphData
+import com.eva.sensorui.presentation.utils.UiEvents
 import com.eva.sensorui.utils.AxisInformation
 import com.eva.sensorui.utils.GraphAxisUpdater
 import com.eva.sensorui.utils.Resource
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -42,6 +45,9 @@ class DetailedRouteViewModel(
         GraphData()
     )
 
+    private val _errorFlow = MutableSharedFlow<UiEvents>()
+    val errorFlow = _errorFlow.asSharedFlow()
+
     init {
         val sensorType = savedStateHandle.get<Int>(NavArgs.SENSOR_ID) ?: -1
         if (sensorType != -1) {
@@ -51,6 +57,7 @@ class DetailedRouteViewModel(
                 when (val data = repository.getSensorData(sensor = sensorType)) {
                     is Resource.Error -> {
                         Log.d("ERROR", "Error Occurred")
+                        _errorFlow.emit(UiEvents.ShowSnackBar(data.message ?: "error occurred"))
                     }
 
                     is Resource.Success -> {

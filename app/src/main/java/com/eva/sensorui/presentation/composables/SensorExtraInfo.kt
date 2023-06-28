@@ -19,8 +19,7 @@ fun SensorExtraData(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 10.dp)
-            .padding(vertical = 1.dp),
+            .padding(horizontal = 10.dp, vertical = 2.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(

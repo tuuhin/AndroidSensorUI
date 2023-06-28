@@ -15,12 +15,17 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -28,11 +33,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.eva.sensorui.R
 import com.eva.sensorui.domain.models.BaseSensorInfoModel
 import com.eva.sensorui.domain.models.GraphData
 import com.eva.sensorui.presentation.composables.SensorCardDetailed
 import com.eva.sensorui.presentation.composables.SensorGraph
+import com.eva.sensorui.presentation.utils.UiEvents
 import com.eva.sensorui.utils.AxisInformation
+import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,12 +49,25 @@ fun DetailsRoute(
     axis: AxisInformation,
     sensorInfo: BaseSensorInfoModel,
     sensorGraphData: GraphData,
+    errors: Flow<UiEvents>,
     modifier: Modifier = Modifier,
 ) {
+
+    val snackBarState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        errors.collect { events ->
+            when (events) {
+                is UiEvents.ShowSnackBar -> snackBarState.showSnackbar(events.message)
+            }
+        }
+    }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackBarState) },
         topBar = {
             TopAppBar(
-                title = { Text(text = sensorInfo.name + " SENSOR") },
+                title = { Text(text = sensorInfo.name) },
                 navigationIcon = {
                     if (navController.previousBackStackEntry != null)
                         IconButton(
@@ -75,12 +96,13 @@ fun DetailsRoute(
             Column(
                 modifier = Modifier
                     .weight(.7f)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "The graph is responsive only when the values changes",
+                    text = stringResource(id = R.string.graph_info),
                     style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = MaterialTheme.colorScheme.tertiary,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(vertical = 6.dp)
                 )

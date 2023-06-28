@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.SpanStyle
@@ -36,20 +37,29 @@ fun SensorGraph(
     maximumRange: Float,
     minimumRange: Float,
     sensorValues: List<AxisInformation>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    strokeCap: StrokeCap = StrokeCap.Butt,
+    strokeWidth: Float = 2f,
+    textStyle: TextStyle = TextStyle(
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Medium,
+        textAlign = TextAlign.End
+    ),
+    colorPrimary: Color = MaterialTheme.colorScheme.onPrimaryContainer,
+    colorSecondary: Color = MaterialTheme.colorScheme.onSecondaryContainer,
+    colorTertiary: Color = MaterialTheme.colorScheme.onTertiaryContainer,
+    surface: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    onSurface: Color = MaterialTheme.colorScheme.onSurfaceVariant,
+    spanStyle: SpanStyle = SpanStyle(color = MaterialTheme.colorScheme.onSurfaceVariant)
 ) {
 
     val textMeasurer = rememberTextMeasurer()
 
-    val formatter = remember {
-        DecimalFormat("##.#")
-    }
+    val formatter = remember { DecimalFormat("##.#") }
 
-    val colorPrimary = MaterialTheme.colorScheme.onPrimaryContainer
-    val colorSecondary = MaterialTheme.colorScheme.onSecondaryContainer
-    val colorTertiary = MaterialTheme.colorScheme.onTertiaryContainer
-    val surface = MaterialTheme.colorScheme.onSurfaceVariant
-    val onSurface = MaterialTheme.colorScheme.onSurfaceVariant
+    val minimumAbs = remember(minimumRange) { abs(minimumRange) }
+
+    val maximumAbs = remember(maximumRange) { abs(maximumRange) }
 
     Card(
         shape = MaterialTheme.shapes.extraSmall,
@@ -62,10 +72,8 @@ fun SensorGraph(
             modifier = Modifier
                 .padding(20.dp)
                 .fillMaxSize()
-
         ) {
             val width = size.width / sensorValues.size
-
             // y axis
             drawLine(
                 color = surface,
@@ -87,17 +95,15 @@ fun SensorGraph(
             // x-max line
             drawLine(
                 color = surface,
-                start = Offset(-10f,0f ),
-                end = Offset(size.width + 10f,0f),
+                start = Offset(-10f, 0f),
+                end = Offset(size.width + 10f, 0f),
                 cap = StrokeCap.Round,
                 strokeWidth = 1f,
                 alpha = 0.8f
             )
 
             if (minimumRange <= 0f) {
-                val yAxis =
-                    (abs(maximumRange) / (abs(maximumRange) + abs(minimumRange))) * size.height
-
+                val yAxis = (maximumAbs / (maximumAbs + minimumAbs)) * size.height
                 drawLine(
                     color = surface,
                     start = Offset(-10f, yAxis),
@@ -111,21 +117,18 @@ fun SensorGraph(
             sensorValues.forEachIndexed { idx, info ->
                 when (info) {
                     is AxisInformation.XAxisInformation -> {
-
                         val graphHeight =
-                            (info.x + abs(minimumRange)) * size.height / (abs(maximumRange) + abs(
-                                minimumRange
-                            ))
+                            (info.x + minimumAbs) * size.height / (maximumAbs + minimumAbs)
                         val next = sensorValues.getOrNull(idx + 1)
                         if (next != null && next is AxisInformation.XAxisInformation) {
                             val graphHeightNext =
-                                next.x * size.height / maximumRange
+                                (next.x + minimumAbs) * size.height / (maximumAbs + minimumAbs)
                             drawLine(
                                 color = colorPrimary,
                                 start = Offset(width * (idx), size.height - graphHeight),
                                 end = Offset(width * (idx + 1), size.height - graphHeightNext),
-                                strokeWidth = 2.5f,
-                                cap = StrokeCap.Butt,
+                                strokeWidth = strokeWidth,
+                                cap = strokeCap,
                                 alpha = (idx + 1).toFloat() / sensorValues.size
                             )
                         }
@@ -133,33 +136,34 @@ fun SensorGraph(
 
                     is AxisInformation.XYAxisInformation -> {
 
-                        val graphHeightX = info.x * size.height / maximumRange
+                        val graphHeightX =
+                            (info.x + minimumAbs) * size.height / (maximumAbs + minimumAbs)
                         val nextX = sensorValues.getOrNull(idx + 1)
                         if (nextX != null && nextX is AxisInformation.XYZAxisInformation) {
                             val graphHeightNextX =
-                                (nextX.x + abs(minimumRange)) * size.height / (abs(maximumRange) + abs(
-                                    minimumRange
-                                ))
+                                (nextX.x + minimumAbs) * size.height / (maximumAbs + minimumAbs)
                             drawLine(
                                 color = colorPrimary,
                                 start = Offset(width * (idx - 1), size.height - graphHeightX),
                                 end = Offset(width * idx, size.height - graphHeightNextX),
-                                strokeWidth = 2.5f,
-                                cap = StrokeCap.Butt,
+                                strokeWidth = strokeWidth,
+                                cap = strokeCap,
                                 alpha = idx.toFloat() / sensorValues.size
                             )
                         }
 
-                        val graphHeightY = info.y * size.height / maximumRange
+                        val graphHeightY =
+                            (info.y + minimumAbs) * size.height / (maximumAbs + minimumAbs)
                         val nextY = sensorValues.getOrNull(idx + 1)
                         if (nextY != null && nextY is AxisInformation.XYZAxisInformation) {
-                            val graphHeightNextY = nextY.y * size.height / maximumRange
+                            val graphHeightNextY =
+                                (nextY.y + minimumAbs) * size.height / (maximumAbs + minimumAbs)
                             drawLine(
                                 color = colorSecondary,
                                 start = Offset(width * (idx - 1), size.height - graphHeightY),
                                 end = Offset(width * idx, size.height - graphHeightNextY),
-                                strokeWidth = 2.5f,
-                                cap = StrokeCap.Butt,
+                                strokeWidth = strokeWidth,
+                                cap = strokeCap,
                                 alpha = idx.toFloat() / sensorValues.size
                             )
                         }
@@ -168,61 +172,49 @@ fun SensorGraph(
                     is AxisInformation.XYZAxisInformation -> {
 
                         val graphHeightX =
-                            (info.x + abs(minimumRange)) * size.height / (abs(maximumRange) + abs(
-                                minimumRange
-                            ))
+                            (info.x + minimumAbs) * size.height / (maximumAbs + minimumAbs)
                         val nextX = sensorValues.getOrNull(idx + 1)
                         if (nextX != null && nextX is AxisInformation.XYZAxisInformation) {
                             val graphHeightNextX =
-                                (nextX.x + abs(minimumRange)) * size.height / (abs(maximumRange) + abs(
-                                    minimumRange
-                                ))
+                                (nextX.x + minimumAbs) * size.height / (maximumAbs + minimumAbs)
                             drawLine(
                                 color = colorPrimary,
                                 start = Offset(width * (idx - 1), size.height - graphHeightX),
                                 end = Offset(width * idx, size.height - graphHeightNextX),
-                                strokeWidth = 2.5f,
-                                cap = StrokeCap.Butt,
+                                strokeWidth = strokeWidth,
+                                cap = strokeCap,
                                 alpha = idx.toFloat() / sensorValues.size
                             )
                         }
 
                         val graphHeightY =
-                            (info.y + abs(minimumRange)) * size.height / (abs(maximumRange) + abs(
-                                minimumRange
-                            ))
+                            (info.y + minimumAbs) * size.height / (maximumAbs + minimumAbs)
                         val nextY = sensorValues.getOrNull(idx + 1)
                         if (nextY != null && nextY is AxisInformation.XYZAxisInformation) {
                             val graphHeightNextY =
-                                (nextY.y + abs(minimumRange)) * size.height / (abs(maximumRange) + abs(
-                                    minimumRange
-                                ))
+                                (nextY.y + minimumAbs) * size.height / (maximumAbs + minimumAbs)
                             drawLine(
                                 color = colorSecondary,
                                 start = Offset(width * (idx - 1), size.height - graphHeightY),
                                 end = Offset(width * idx, size.height - graphHeightNextY),
-                                strokeWidth = 2.5f,
-                                cap = StrokeCap.Butt,
+                                strokeWidth = strokeWidth,
+                                cap = strokeCap,
                                 alpha = idx.toFloat() / sensorValues.size
                             )
                         }
 
                         val graphHeightZ =
-                            (info.z + abs(minimumRange)) * size.height / (abs(maximumRange) + abs(
-                                minimumRange
-                            ))
+                            (info.z + minimumAbs) * size.height / (maximumAbs + minimumAbs)
                         val nextZ = sensorValues.getOrNull(idx + 1)
                         if (nextZ != null && nextZ is AxisInformation.XYZAxisInformation) {
                             val graphHeightNextZ =
-                                (nextZ.z + abs(minimumRange)) * size.height / (abs(maximumRange) + abs(
-                                    minimumRange
-                                ))
+                                (nextZ.z + minimumAbs) * size.height / (maximumAbs + minimumAbs)
                             drawLine(
                                 color = colorTertiary,
                                 start = Offset(width * (idx - 1), size.height - graphHeightZ),
                                 end = Offset(width * idx, size.height - graphHeightNextZ),
-                                strokeWidth = 2.5f,
-                                cap = StrokeCap.Butt,
+                                strokeWidth = strokeWidth,
+                                cap = strokeCap,
                                 alpha = idx.toFloat() / sensorValues.size
                             )
                         }
@@ -236,11 +228,7 @@ fun SensorGraph(
                                     append("Data Not Found")
                                 }
                             },
-                            style = TextStyle(
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium,
-                                textAlign = TextAlign.Center
-                            ),
+                            style = textStyle.copy(textAlign = TextAlign.Center),
                             topLeft = Offset(center.x, center.y)
                         )
                     }
@@ -253,54 +241,37 @@ fun SensorGraph(
             drawText(
                 textMeasurer = textMeasurer,
                 text = buildAnnotatedString {
-                    withStyle(SpanStyle(color = onSurface)) {
+                    withStyle(spanStyle) {
                         append(formatter.format(maximumRange))
                     }
                 },
-                style = TextStyle(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    textAlign = TextAlign.End
-                ),
+                style = textStyle,
                 topLeft = Offset(-32.sp.value, -16.sp.value)
             )
 
-            if (minimumRange < -1f ) {
-                val yAxis =
-                    (abs(maximumRange) / (abs(maximumRange) + abs(minimumRange))) * size.height
+            if (minimumRange < -1f) {
+                val yAxis = (maximumAbs / (maximumAbs + minimumAbs)) * size.height
                 drawText(
                     textMeasurer = textMeasurer,
                     text = buildAnnotatedString {
-                        withStyle(SpanStyle(color = onSurface)) {
-                            append("0")
+                        withStyle(spanStyle) {
+                            append(formatter.format(0))
                         }
                     },
-                    style = TextStyle(
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.End
-                    ),
+                    style = textStyle,
                     topLeft = Offset(-32.sp.value, yAxis - 32.sp.value)
                 )
             }
-
-
             // draw min
             drawText(
                 textMeasurer = textMeasurer,
                 text = buildAnnotatedString {
-                    withStyle(SpanStyle(color = onSurface)) {
+                    withStyle(spanStyle) {
                         append(formatter.format(minimumRange))
                     }
                 },
-                style = TextStyle(
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    textAlign = TextAlign.End
-                ),
-                topLeft = Offset(
-                    -36.sp.value, size.height - 32.sp.value
-                )
+                style = textStyle,
+                topLeft = Offset(-36.sp.value, size.height - 32.sp.value)
             )
 
         }
@@ -335,6 +306,6 @@ fun SensorGraphPreview(
         sensorValues = sensorValues,
         modifier = Modifier.size(100.dp, 200.dp),
         maximumRange = 10f,
-        minimumRange = -10f
+        minimumRange = -10f,
     )
 }

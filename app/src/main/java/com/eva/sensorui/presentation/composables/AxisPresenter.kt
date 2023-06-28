@@ -79,7 +79,6 @@ fun AxisPresenter(
 
         is AxisInformation.XYZAxisInformation -> {
 
-
             Row(
                 modifier = modifier,
                 verticalAlignment = Alignment.CenterVertically
@@ -91,7 +90,8 @@ fun AxisPresenter(
                         .background(MaterialTheme.colorScheme.primary)
                 )
                 Text(
-                    text = "x: ${formatter.format(axis.x)}", modifier = Modifier.padding(horizontal = 4.dp)
+                    text = "x: ${formatter.format(axis.x)}",
+                    modifier = Modifier.padding(horizontal = 4.dp)
                 )
                 Box(
                     modifier = Modifier
@@ -100,7 +100,8 @@ fun AxisPresenter(
                         .background(MaterialTheme.colorScheme.secondary)
                 )
                 Text(
-                    text = "y: ${formatter.format(axis.y)}", modifier = Modifier.padding(horizontal = 4.dp)
+                    text = "y: ${formatter.format(axis.y)}",
+                    modifier = Modifier.padding(horizontal = 4.dp)
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Box(
@@ -110,7 +111,8 @@ fun AxisPresenter(
                         .background(MaterialTheme.colorScheme.tertiary)
                 )
                 Text(
-                    text = "z: ${formatter.format(axis.z)}", modifier = Modifier.padding(horizontal = 4.dp)
+                    text = "z: ${formatter.format(axis.z)}",
+                    modifier = Modifier.padding(horizontal = 4.dp)
                 )
             }
         }

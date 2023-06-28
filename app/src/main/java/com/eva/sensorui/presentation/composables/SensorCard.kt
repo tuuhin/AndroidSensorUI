@@ -19,9 +19,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -34,7 +36,11 @@ fun SensorCard(
     range: Float,
     vendor: String,
     onTap: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    titleStyle: TextStyle = MaterialTheme.typography.bodyMedium,
+    titleColor: Color = MaterialTheme.colorScheme.onSurface,
+    textStyle: TextStyle = MaterialTheme.typography.bodySmall,
+    textColor: Color = MaterialTheme.colorScheme.secondary
 ) {
     OutlinedCard(
         modifier = modifier
@@ -69,23 +75,27 @@ fun SensorCard(
             ) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = titleStyle,
+                    color = titleColor
                 )
-                Divider(modifier = Modifier.padding(vertical = 2.dp))
+                Divider(
+                    modifier = Modifier
+                        .padding(vertical = 2.dp)
+                )
                 Text(
                     text = buildAnnotatedString {
                         append("Range: ")
                         append("$range")
                     },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary
+                    style = textStyle,
+                    color = textColor
                 )
                 Text(
                     text = buildAnnotatedString {
                         append("Vendor: ")
                         append(vendor)
-                    }, style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.secondary
+                    }, style = textStyle,
+                    color = textColor
                 )
             }
         }
@@ -99,7 +109,7 @@ fun SensorCardPreview() {
         image = R.drawable.ic_sensor_brightness,
         title = "Brightness",
         onTap = { },
-        vendor = "",
+        vendor = "Something",
         range = 0f
     )
 }

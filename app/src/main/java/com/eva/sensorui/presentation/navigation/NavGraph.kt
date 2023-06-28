@@ -66,7 +66,8 @@ fun NavigationGraph(modifier: Modifier = Modifier) {
                     navController = navController,
                     axis = currentValue,
                     sensorInfo = sensorInfo!!,
-                    sensorGraphData = sensorGraphData
+                    sensorGraphData = sensorGraphData,
+                    errors = viewModel.errorFlow
                 )
             }
         }
